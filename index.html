@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf7ef">
+  <meta name="description" content="Infinity Craft на русском: крафты из четырёх стихий, книга рецептов и свои элементы.">
+  <title>Infinity Craft — Мастерская бесконечности</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff5a36'/%3E%3Ctext x='32' y='47' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%88%9E%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">∞</div>
+        <div class="brand-text">
+          <h1>Infinity Craft</h1>
+          <p>мастерская бесконечности</p>
+        </div>
+      </div>
+
+      <div class="stats" aria-label="Прогресс">
+        <div class="stat" title="Открыто элементов">
+          <span aria-hidden="true">🧪</span>
+          <b id="statElements">4</b>
+          <small>элементов</small>
+        </div>
+        <div class="stat" title="Открыто рецептов">
+          <span aria-hidden="true">📖</span>
+          <b id="statRecipes">0</b>
+          <small>рецептов</small>
+        </div>
+      </div>
+
+      <div class="topbar-spacer"></div>
+
+      <button class="save-pill" id="savePill" type="button" title="Сохранить сейчас">
+        <span class="save-dot" id="saveDot"></span>
+        <span id="saveText">Сохранено</span>
+      </button>
+
+      <div class="actions">
+        <button class="btn btn--primary" id="btnRecipes" type="button" title="Книга рецептов">
+          <span aria-hidden="true">📖</span><span class="btn-label">Рецепты</span>
+        </button>
+        <button class="btn btn--icon" id="btnMenu" type="button" aria-haspopup="menu"
+                aria-expanded="false" aria-controls="menu" title="Меню" aria-label="Меню">⋯</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="board-column" aria-label="Стол крафта">
+        <div class="board-toolbar">
+          <p class="board-tip"><span aria-hidden="true">🖱️</span> Перетащите элемент на другой — или выберите два по очереди</p>
+          <div class="board-tools">
+            <span class="board-counter" id="boardCounter">4 на столе</span>
+            <button class="btn btn--tiny" id="btnClear" type="button">🧹 Очистить</button>
+          </div>
+        </div>
+
+        <div class="board is-empty" id="board" aria-label="Поле для крафта">
+          <div class="board-empty" id="boardEmpty">
+            <div class="board-empty-art" aria-hidden="true">✦</div>
+            <p>Стол пуст</p>
+            <span>Добавьте элемент из панели справа</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Открытые элементы">
+        <div class="panel-head">
+          <h2>Элементы</h2>
+          <span class="panel-count" id="panelCount">4</span>
+        </div>
+
+        <label class="search">
+          <span aria-hidden="true">🔎</span>
+          <input id="searchInput" type="search" placeholder="Найти элемент…" autocomplete="off" spellcheck="false" aria-label="Поиск элемента">
+        </label>
+
+        <div class="elements-list" id="elementsList"></div>
+
+        <div class="panel-foot">
+          <p class="panel-hint">Клик — добавить. Тяните элемент на стол.<br>Верните фишку сюда — она уберётся.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <div class="menu" id="menu" role="menu" hidden>
+    <button type="button" role="menuitem" data-action="save">💾 Сохранить сейчас</button>
+    <button type="button" role="menuitem" data-action="export">📤 Экспорт сохранения</button>
+    <button type="button" role="menuitem" data-action="import">📥 Импорт сохранения</button>
+    <button type="button" role="menuitem" data-action="sound" id="menuSound">🔊 Звук: вкл</button>
+    <div class="menu-sep"></div>
+    <button type="button" role="menuitem" data-action="clear">🧹 Очистить стол</button>
+    <button type="button" role="menuitem" data-action="reset" class="danger">♻️ Сбросить прогресс</button>
+  </div>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+
+  <dialog class="modal" id="recipesDialog" aria-labelledby="recipesTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="recipesTitle">Книга рецептов</h3>
+        <p id="recipesSubtitle">Открытые комбинации</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="search search--modal">
+        <span aria-hidden="true">🔎</span>
+        <input id="recipeSearch" type="search" placeholder="Поиск по рецептам…" autocomplete="off" spellcheck="false" aria-label="Поиск по рецептам">
+      </label>
+      <div class="recipe-list" id="recipeList"></div>
+      <p class="recipe-count" id="recipeCount"></p>
+    </div>
+  </dialog>
+
+  <dialog class="modal modal--confirm" id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="confirm-icon" id="confirmIcon" aria-hidden="true">⚠️</div>
+    <h3 id="confirmTitle">Подтвердите действие</h3>
+    <p id="confirmText"></p>
+    <div class="confirm-actions">
+      <button class="btn" type="button" id="confirmCancel">Отмена</button>
+      <button class="btn btn--danger" type="button" id="confirmOk">Подтвердить</button>
+    </div>
+  </dialog>
+
+  <noscript>
+    <div style="position:fixed;inset:0;display:grid;place-items:center;background:#fbf7ef;z-index:999;font:16px sans-serif;text-align:center;padding:24px">
+      Для игры нужен включённый JavaScript.
+    </div>
+  </noscript>
+
+  <script src="recipes-user.js"></script>
+  <script src="recipes.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
+

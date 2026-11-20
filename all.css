@@ -1,0 +1,101 @@
+/* Версия «все элементы»: фиолетовый акцент и бейдж режима. */
+
+body.theme-all {
+  --accent: #7c6cf0;
+  --accent-deep: #5b4ad6;
+}
+
+body.theme-all::before {
+  background:
+    radial-gradient(900px 600px at 8% -10%, rgba(124, 108, 240, 0.16), transparent 60%),
+    radial-gradient(800px 620px at 100% 0%, rgba(74, 190, 180, 0.13), transparent 62%),
+    radial-gradient(700px 500px at 50% 115%, rgba(242, 169, 59, 0.12), transparent 65%),
+    var(--paper);
+}
+
+body.theme-all .brand-mark {
+  background: linear-gradient(140deg, #9b8cff 0%, #7c6cf0 45%, #4abeb4 100%);
+  box-shadow: 0 8px 18px -9px rgba(124, 108, 240, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+body.theme-all .btn--primary {
+  background: linear-gradient(135deg, #8f80ff 0%, #7c6cf0 55%, #4abeb4 100%);
+  box-shadow: 0 8px 20px -10px rgba(124, 108, 240, 0.95);
+}
+
+body.theme-all .btn--primary:hover {
+  background: linear-gradient(135deg, #9b8dff 0%, #8877f5 55%, #54c8be 100%);
+  box-shadow: 0 12px 24px -11px rgba(124, 108, 240, 1);
+}
+
+body.theme-all button:focus-visible,
+body.theme-all input:focus-visible,
+body.theme-all .chip:focus-visible {
+  outline-color: rgba(124, 108, 240, 0.4);
+}
+
+body.theme-all .search:focus-within {
+  border-color: rgba(124, 108, 240, 0.55);
+  box-shadow: 0 0 0 3px rgba(124, 108, 240, 0.1);
+}
+
+body.theme-all .panel-count {
+  border-color: rgba(124, 108, 240, 0.25);
+  background: rgba(124, 108, 240, 0.09);
+  color: var(--accent-deep);
+}
+
+body.theme-all .chip.is-selected,
+body.theme-all .chip.is-target {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 3px rgba(124, 108, 240, 0.26),
+    0 14px 28px -16px rgba(70, 45, 20, 0.5);
+}
+
+body.theme-all .chip.is-selected::after {
+  background: var(--accent);
+}
+
+body.theme-all .board.is-drop-target {
+  border-color: rgba(124, 108, 240, 0.68);
+  box-shadow:
+    inset 0 0 0 3px rgba(124, 108, 240, 0.12),
+    inset 0 0 80px rgba(120, 85, 40, 0.035),
+    var(--shadow-sm);
+}
+
+body.theme-all .board.is-drop-target::after {
+  background: var(--accent);
+}
+
+body.theme-all .el-add {
+  color: var(--accent);
+}
+
+body.theme-all .el-item:hover .el-add {
+  color: var(--accent-deep);
+}
+
+.mode-badge {
+  display: inline-block;
+  margin-left: 2px;
+  padding: 2px 8px 3px;
+  border-radius: 999px;
+  vertical-align: 2px;
+  background: rgba(124, 108, 240, 0.12);
+  color: #5b4ad6;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.menu-link:hover {
+  background: var(--paper-2);
+}
+
+@media (max-width: 760px) {
+  .mode-badge { display: none; }
+}

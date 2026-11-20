@@ -1,0 +1,7 @@
+﻿# Служебные файлы, не нужны на сайте
+tools/
+shots/
+*.log
+.DS_Store
+Thumbs.db
+node_modules/

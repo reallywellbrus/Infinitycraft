@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf7ef">
+  <meta name="description" content="Infinity Craft — версия со всеми 223 элементами и 483 рецептами, открытыми сразу.">
+  <title>Infinity Craft — все элементы</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c6cf0'/%3E%3Ctext x='32' y='47' font-size='40' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%88%9E%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="all.css">
+</head>
+<body class="theme-all">
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">∞</div>
+        <div class="brand-text">
+          <h1>Infinity Craft <span class="mode-badge">все элементы</span></h1>
+          <p>открыто с самого начала</p>
+        </div>
+      </div>
+
+      <div class="stats" aria-label="Прогресс">
+        <div class="stat" title="Всего элементов в игре">
+          <span aria-hidden="true">🧪</span>
+          <b id="statElements">0</b>
+          <small>элементов</small>
+        </div>
+        <div class="stat" title="Открыто рецептов">
+          <span aria-hidden="true">📖</span>
+          <b id="statRecipes">0</b>
+          <small>рецептов</small>
+        </div>
+      </div>
+
+      <div class="topbar-spacer"></div>
+
+      <button class="save-pill" id="savePill" type="button" title="Сохранить сейчас">
+        <span class="save-dot" id="saveDot"></span>
+        <span id="saveText">Сохранено</span>
+      </button>
+
+      <div class="actions">
+        <button class="btn" id="btnEditor" type="button" title="Изменить названия элементов">
+          <span aria-hidden="true">✏️</span><span class="btn-label">Названия</span>
+        </button>
+        <button class="btn btn--primary" id="btnRecipes" type="button" title="Книга рецептов">
+          <span aria-hidden="true">📖</span><span class="btn-label">Рецепты</span>
+        </button>
+        <button class="btn btn--icon" id="btnMenu" type="button" aria-haspopup="menu"
+                aria-expanded="false" aria-controls="menu" title="Меню" aria-label="Меню">⋯</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="board-column" aria-label="Стол крафта">
+        <div class="board-toolbar">
+          <p class="board-tip"><span aria-hidden="true">🖱️</span> Перетащите элемент на другой — или выберите два по очереди</p>
+          <div class="board-tools">
+            <span class="board-counter" id="boardCounter">0 на столе</span>
+            <button class="btn btn--tiny" id="btnClear" type="button">🧹 Очистить</button>
+          </div>
+        </div>
+
+        <div class="board is-empty" id="board" aria-label="Поле для крафта">
+          <div class="board-empty" id="boardEmpty">
+            <div class="board-empty-art" aria-hidden="true">✦</div>
+            <p>Стол пуст</p>
+            <span>Все элементы уже открыты — просто перетащите их сюда</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="Все элементы">
+        <div class="panel-head">
+          <h2>Все элементы</h2>
+          <span class="panel-count" id="panelCount">0</span>
+        </div>
+
+        <label class="search">
+          <span aria-hidden="true">🔎</span>
+          <input id="searchInput" type="search" placeholder="Найти элемент…" autocomplete="off" spellcheck="false" aria-label="Поиск элемента">
+        </label>
+
+        <div class="elements-list" id="elementsList"></div>
+
+        <form class="quick-rename" id="quickRename" hidden autocomplete="off">
+          <label class="search search--modal">
+            <span aria-hidden="true">✏️</span>
+            <input id="quickRenameInput" type="text" placeholder="Новое название…" spellcheck="false" aria-label="Новое название элемента">
+          </label>
+          <button class="btn btn--tiny" type="button" id="quickRenameCancel" title="Отменить (Esc)">Ок</button>
+        </form>
+
+        <div class="panel-foot">
+          <p class="panel-hint">Клик — добавить. Тяните элемент на стол.<br>У фишек с ✏️ можно менять название.</p>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
+  <div class="menu" id="menu" role="menu" hidden>
+    <button type="button" role="menuitem" data-action="save">💾 Сохранить сейчас</button>
+    <button type="button" role="menuitem" data-action="export">📤 Экспорт сохранения</button>
+    <button type="button" role="menuitem" data-action="import">📥 Импорт сохранения</button>
+    <button type="button" role="menuitem" data-action="sound" id="menuSound">🔊 Звук: вкл</button>
+    <button type="button" role="menuitem" data-action="proposals" id="menuProposals">📝 Мои рецепты</button>
+    <button type="button" role="menuitem" data-action="editor" id="menuEditor">✏️ Изменить названия</button>
+    <div class="menu-sep"></div>
+    <button type="button" role="menuitem" data-action="clear">🧹 Очистить стол</button>
+    <button type="button" role="menuitem" data-action="reset" class="danger">♻️ Сбросить стол</button>
+    <div class="menu-sep"></div>
+    <a class="menu-link" href="index.html" role="menuitem">🧪 Обычная версия (с прогрессом)</a>
+  </div>
+  <input type="file" id="importFile" accept="application/json,.json" hidden>
+
+  <dialog class="modal" id="recipesDialog" aria-labelledby="recipesTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="recipesTitle">Книга рецептов</h3>
+        <p id="recipesSubtitle">Открытые комбинации</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="search search--modal">
+        <span aria-hidden="true">🔎</span>
+        <input id="recipeSearch" type="search" placeholder="Поиск по рецептам…" autocomplete="off" spellcheck="false" aria-label="Поиск по рецептам">
+      </label>
+      <div class="recipe-list" id="recipeList"></div>
+      <p class="recipe-count" id="recipeCount"></p>
+    </div>
+  </dialog>
+
+  <dialog class="modal modal--propose" id="proposeDialog" aria-labelledby="proposeTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="proposeTitle">Такого рецепта пока нет</h3>
+        <p id="proposeSubtitle">Выберите, что получится</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+
+    <div class="modal-body propose-body">
+      <div class="propose-pair">
+        <div class="propose-side" id="proposeA"></div>
+        <span class="mini-op">+</span>
+        <div class="propose-side" id="proposeB"></div>
+        <span class="recipe-arrow">→</span>
+        <span class="propose-unknown" aria-hidden="true">?</span>
+      </div>
+
+      <p class="propose-note" id="proposeNote"></p>
+
+      <form class="propose-form" id="proposeForm" autocomplete="off">
+        <label class="search search--modal">
+          <span aria-hidden="true">🔎</span>
+          <input id="proposeInput" type="text" placeholder="Что получится? Введите элемент или имя нового…"
+                 spellcheck="false" aria-label="Результат соединения">
+        </label>
+
+        <div class="propose-grid" id="proposeGrid" role="listbox" aria-label="Все элементы"></div>
+
+        <div class="propose-actions">
+          <button class="btn" type="button" id="proposeSkip">Пропустить</button>
+          <button class="btn btn--danger" type="submit" id="proposeSave">✚ Сохранить рецепт</button>
+        </div>
+        <p class="propose-hint" id="proposeSaveHint" role="status"></p>
+      </form>
+
+      <div class="propose-footer">
+        <span class="propose-count-pill">📝 У вас рецептов: <b id="proposeCount">0</b></span>
+        <button class="btn btn--tiny" type="button" id="proposeApply">✅ Применить мои предложения</button>
+      </div>
+      <div class="proposal-list" id="proposeList"></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="proposalsDialog" aria-labelledby="proposalsTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="proposalsTitle">Мои рецепты</h3>
+        <p>Предложения, которые будут добавлены в основную игру</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="propose-footer">
+        <span class="propose-count-pill">📝 Всего: <b id="proposalsCount">0</b></span>
+        <button class="btn btn--tiny" type="button" id="proposalsCopy">📋 Скопировать все</button>
+        <button class="btn btn--tiny" type="button" id="proposalsExport">📥 Скачать JSON</button>
+      </div>
+      <p class="propose-hint" id="proposeHint" role="status"></p>
+      <div class="proposal-list" id="proposalsList"></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="editorDialog" aria-labelledby="editorTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="editorTitle">Изменить названия</h3>
+        <p>Нажмите на элемент, чтобы переименовать его. Названия сохраняются как есть.</p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <label class="search search--modal">
+        <span aria-hidden="true">🔎</span>
+        <input id="editorSearch" type="search" placeholder="Найти элемент…" autocomplete="off" spellcheck="false" aria-label="Поиск элемента">
+      </label>
+      <div class="editor-list" id="editorRows"></div>
+      <p class="recipe-count" id="editorCount"></p>
+    </div>
+  </dialog>
+
+  <dialog class="modal modal--rename" id="renameDialog" aria-labelledby="renameTitle">
+    <div class="modal-head">
+      <div>
+        <h3 id="renameTitle">Название элемента</h3>
+        <p id="renameSubtitle"></p>
+      </div>
+      <button class="modal-close" type="button" data-close aria-label="Закрыть">✕</button>
+    </div>
+    <form class="modal-body rename-body" id="renameForm" autocomplete="off">
+      <label class="rename-field">
+        <span>Название</span>
+        <input id="renameInput" type="text" spellcheck="false" maxlength="60">
+      </label>
+      <label class="rename-field rename-field--emoji">
+        <span>Эмодзи</span>
+        <input id="renameEmoji" type="text" spellcheck="false" maxlength="8" inputmode="text">
+      </label>
+      <p class="propose-hint" id="renameHint" role="status"></p>
+      <div class="propose-actions">
+        <button class="btn" type="button" id="renameReset">↺ Вернуть прежнее</button>
+        <button class="btn btn--primary" type="submit">💾 Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal modal--confirm" id="confirmDialog" aria-labelledby="confirmTitle">
+    <div class="confirm-icon" id="confirmIcon" aria-hidden="true">⚠️</div>
+    <h3 id="confirmTitle">Подтвердите действие</h3>
+    <p id="confirmText"></p>
+    <div class="confirm-actions">
+      <button class="btn" type="button" id="confirmCancel">Отмена</button>
+      <button class="btn btn--danger" type="button" id="confirmOk">Подтвердить</button>
+    </div>
+  </dialog>
+
+  <noscript>
+    <div style="position:fixed;inset:0;display:grid;place-items:center;background:#fbf7ef;z-index:999;font:16px sans-serif;text-align:center;padding:24px">
+      Для игры нужен включённый JavaScript.
+    </div>
+  </noscript>
+
+  <script src="recipes-user.js"></script>
+  <script src="recipes.js"></script>
+  <script src="config-all.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
+
